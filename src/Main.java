@@ -65,7 +65,20 @@ public class Main {
     // ======== 10 REQUIRED METHODS (Students fill these) ========
 
     public static String mostProfitableCommodityInMonth(int month) {
-        return "DUMMY"; 
+        int maxProfit = Integer.MIN_VALUE;
+        int mpCommodityIndex = -1;
+
+        for (int i = 0; i < COMMS; i++) {
+            int sum = 0;
+            for (int j = 0; j < DAYS; j++) {
+                sum += profitData[month][i][j];
+            }
+            if (sum > maxProfit) {
+                maxProfit = sum;
+                mpCommodityIndex = i;
+            }
+        }
+        return "DUMMY";
     }
 
     public static int totalProfitOnDay(int month, int day) {
