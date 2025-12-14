@@ -1,0 +1,1 @@
+This is my first commit about SE115 Project. Today, I wrote loadData method for importing datas which are given by lecturer and I checked my method. I didn't face with any issues. The method is working properly and importing every single data clearly. 
