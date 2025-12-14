@@ -16,47 +16,47 @@ public class Main {
 
     // ======== REQUIRED METHOD LOAD DATA (Students fill this) ========
     public static void loadData() {
-        for (int month = 0; month < MONTHS; month++) {
-            String monthName = "Data_Files/" + months[month] + ".txt";
-            File monthlyFile = new File(monthName);
-            Scanner monthlyFileReader = null;
+        for (int month = 0; month < MONTHS; month++) {  // All of the months are checking with this for loop.
+            String monthName = "Data_Files/" + months[month] + ".txt";  // This line helps to create name for finding the file.
+            File monthlyFile = new File(monthName);  // This helps convert String to File.
+            Scanner monthlyFileReader = null;  // This helps to scan.
 
-            try {
-                monthlyFileReader = new Scanner(monthlyFile);
+            try {  // This try loop helps control existence of files.
+                monthlyFileReader = new Scanner(monthlyFile);  // This code reads files.
 
-                if (monthlyFileReader.hasNextLine()) {
+                if (monthlyFileReader.hasNextLine()) {  // This code helps us a skipping first line because the first line in every file is "Day,Commodity,Profit".
                     monthlyFileReader.nextLine();
                 }
 
-                while (monthlyFileReader.hasNextLine()) {
-                    String monthLine = monthlyFileReader.nextLine();
+                while (monthlyFileReader.hasNextLine()) {  // This helps to read file until file is finished.
+                    String monthLine = monthlyFileReader.nextLine();  // This line help converting datas to String.
 
                     Scanner monthLineScanner = new Scanner(monthLine);
-                    monthLineScanner.useDelimiter(",");
+                    String[] parts = monthLine.split(",");  // This line helps us for split operation.
 
                     if (monthLineScanner.hasNext()) {
                         int day = monthLineScanner.nextInt();
                         String commodityName =  monthLineScanner.next();
                         int profit = monthLineScanner.nextInt();
-                        int commodityIndex = -1;
+                        int commodityIndex = -1;  // This for unknown commodities.
 
-                        for (int i = 0; i < COMMS; i++) {
-                            if (commodityName.equals(commodities[i])) {
+                        for (int i = 0; i < COMMS; i++) {  // This for loop helps us for checking all commodities one by one.
+                            if (commodityName.equals(commodities[i])) {  // This if loop checks equality of names.
                                 commodityIndex = i;
                                 break;
                             }
                         }
                         int dayIndex = day - 1;
 
-                        if (dayIndex >= 0 && dayIndex < DAYS && commodityIndex != -1) {
-                            profitData[month][dayIndex][commodityIndex] = profit;
+                        if (dayIndex >= 0 && dayIndex < DAYS && commodityIndex != -1) {  // This is security check. This line helps to validate commodities and days.
+                            profitData[month][dayIndex][commodityIndex] = profit;  // This helps to create profitData array with new datas.
                         }
                     }
-                    monthLineScanner.close();
+                    monthLineScanner.close();  // This helps to close montLineScanner for clear the memory.
                 }
-            } catch (FileNotFoundException E) {
-                System.out.println("Error: " + monthlyFile + " not found. Skipping this month.");
-            } if (monthlyFileReader != null) {
+            } catch (FileNotFoundException E) {  // This helps to program shouldn't crash if the file is missing.
+                System.out.println("Error: " + monthlyFile + " not found. Skipping this month.");  // This helps to print error message.
+            } if (monthlyFileReader != null) {  // This helps to check scanner status.
                 monthlyFileReader.close();
             }
         }
@@ -68,12 +68,12 @@ public class Main {
         int maxProfit = Integer.MIN_VALUE;
         int mpCommodityIndex = -1;
 
-        for (int i = 0; i < COMMS; i++) {
+        for (int i = 0; i < COMMS; i++) {  // This line checks every commodity one by one.
             int sum = 0;
-            for (int j = 0; j < DAYS; j++) {
+            for (int j = 0; j < DAYS; j++) {  // This line checks every day in one month one by one.
                 sum += profitData[month][i][j];
             }
-            if (sum > maxProfit) {
+            if (sum > maxProfit) {  // This checks whether the situation is more profitable than before.
                 maxProfit = sum;
                 mpCommodityIndex = i;
             }
@@ -82,6 +82,12 @@ public class Main {
     }
 
     public static int totalProfitOnDay(int month, int day) {
+        int tProfit = 0;
+        int d = day - 1;  // This line converts datas to array index.
+
+        for (int i = 0; i < COMMS; i++) {
+            tProfit += profitData[month][d][i];
+        }
         return 1234;
     }
 
