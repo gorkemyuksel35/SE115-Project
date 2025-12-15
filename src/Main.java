@@ -17,7 +17,7 @@ public class Main {
     // ======== REQUIRED METHOD LOAD DATA (Students fill this) ========
     public static void loadData() {
         for (int month = 0; month < MONTHS; month++) {  // All of the months are checking with this for loop.
-            String monthName = "Data_Files/" + months[month] + ".txt";  // This line helps to create name for finding the file.
+            String monthName = "src/Data_Files/" + months[month] + ".txt";  // This line helps to create name for finding the file.
             File monthlyFile = new File(monthName);  // This helps convert String to File.
             Scanner monthlyFileReader = null;  // This helps to scan.
 
@@ -30,32 +30,29 @@ public class Main {
 
                 while (monthlyFileReader.hasNextLine()) {  // This helps to read file until file is finished.
                     String monthLine = monthlyFileReader.nextLine();  // This line help converting datas to String.
-
-                    Scanner monthLineScanner = new Scanner(monthLine);
                     String[] parts = monthLine.split(",");  // This line helps us for split operation.
 
-                    if (monthLineScanner.hasNext()) {
-                        int day = monthLineScanner.nextInt();
-                        String commodityName =  monthLineScanner.next();
-                        int profit = monthLineScanner.nextInt();
-                        int commodityIndex = -1;  // This for unknown commodities.
+                    int day = Integer.parseInt(parts[0]);
+                    String commodityName = parts[1];
+                    int profit = Integer.parseInt(parts[2]);
 
-                        for (int i = 0; i < COMMS; i++) {  // This for loop helps us for checking all commodities one by one.
-                            if (commodityName.equals(commodities[i])) {  // This if loop checks equality of names.
-                                commodityIndex = i;
-                                break;
-                            }
-                        }
-                        int dayIndex = day - 1;
-
-                        if (dayIndex >= 0 && dayIndex < DAYS && commodityIndex != -1) {  // This is security check. This line helps to validate commodities and days.
-                            profitData[month][dayIndex][commodityIndex] = profit;  // This helps to create profitData array with new datas.
+                    int commodityIndex = -1;  // This for unknown commodities.
+                    for (int i = 0; i < COMMS; i++) {  // This for loop helps us for checking all commodities one by one.
+                        if (commodityName.equals(commodities[i])) {  // This if loop checks equality of names.
+                            commodityIndex = i;
+                            break;
                         }
                     }
-                    monthLineScanner.close();  // This helps to close montLineScanner for clear the memory.
+
+                    int dayIndex = day - 1;
+                    if (dayIndex >= 0 && dayIndex < DAYS && commodityIndex != -1) {  // This is security check. This line helps to validate commodities and days.
+                        profitData[month][dayIndex][commodityIndex] = profit;  // This helps to create profitData array with new datas.
+                    }
                 }
             } catch (FileNotFoundException E) {  // This helps to program shouldn't crash if the file is missing.
                 System.out.println("Error: " + monthlyFile + " not found. Skipping this month.");  // This helps to print error message.
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid number format in file: " + monthName);
             } if (monthlyFileReader != null) {  // This helps to check scanner status.
                 monthlyFileReader.close();
             }
@@ -65,34 +62,58 @@ public class Main {
     // ======== 10 REQUIRED METHODS (Students fill these) ========
 
     public static String mostProfitableCommodityInMonth(int month) {
+        if (month < 0 || month >= MONTHS) {
+            return "INVALID_MONTH";
+        }
         int maxProfit = Integer.MIN_VALUE;
-        int mpCommodityIndex = -1;
+        int mPCIM_Index = -1;
 
         for (int i = 0; i < COMMS; i++) {  // This line checks every commodity one by one.
             int sum = 0;
             for (int j = 0; j < DAYS; j++) {  // This line checks every day in one month one by one.
-                sum += profitData[month][i][j];
+                sum += profitData[month][j][i];
             }
             if (sum > maxProfit) {  // This checks whether the situation is more profitable than before.
                 maxProfit = sum;
-                mpCommodityIndex = i;
+                mPCIM_Index = i;
             }
         }
-        return "DUMMY";
+        return commodities[mPCIM_Index] +" " + maxProfit;
     }
 
     public static int totalProfitOnDay(int month, int day) {
-        int tProfit = 0;
+        if (month < 0 || month >= MONTHS || day < 1 || day > DAYS) {
+            return -99999;
+        }
+        int tPOD_Index = 0;
         int d = day - 1;  // This line converts datas to array index.
 
         for (int i = 0; i < COMMS; i++) {
-            tProfit += profitData[month][d][i];
+            tPOD_Index += profitData[month][d][i];
         }
-        return 1234;
+        return tPOD_Index;
     }
 
     public static int commodityProfitInRange(String commodity, int from, int to) {
-        return 1234;
+        int cPIR_Index = -1;
+        for (int i = 0; i < COMMS; i++) {
+            if (commodities[i].equals(commodity)) {
+                cPIR_Index = i;
+                break;
+            }
+        }
+
+        if (cPIR_Index == -1 || from < 1 || to > DAYS || from > to) {  // This line checks invalidities about file contents.
+            return -99999;
+        }
+
+        int sum = 0;
+        for (int i = 0; i < MONTHS; i++) {
+            for (int j = from - 1; j <= to - 1; j++) {
+                sum += profitData[i][j][cPIR_Index];
+            }
+        }
+        return sum;
     }
 
     public static int bestDayOfMonth(int month) { 
