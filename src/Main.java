@@ -17,7 +17,7 @@ public class Main {
     // ======== REQUIRED METHOD LOAD DATA (Students fill this) ========
     public static void loadData() {
         for (int month = 0; month < MONTHS; month++) {  // All of the months are checking with this for loop.
-            String monthName = "src/Data_Files/" + months[month] + ".txt";  // This line helps to create name for finding the file.
+            String monthName = "Data_Files/" + months[month] + ".txt";  // This line helps to create name for finding the file.
             File monthlyFile = new File(monthName);  // This helps convert String to File.
             Scanner monthlyFileReader = null;  // This helps to scan.
 
@@ -116,12 +116,54 @@ public class Main {
         return sum;
     }
 
-    public static int bestDayOfMonth(int month) { 
-        return 1234; 
+    public static int bestDayOfMonth(int month) {
+        if (month < 0 || month >= MONTHS) {
+            return -1;
+        }
+
+        int bDOM = 1;
+        int maxProfit = Integer.MIN_VALUE;
+        int sum = 0;
+        for (int i = 0; i < DAYS; i++) {
+            for (int j = 0; j < COMMS; j++) {
+                sum += profitData[month][i][j];
+
+                if (sum > maxProfit) {
+                    maxProfit = sum;
+                    bDOM = i + 1; // This line helps us for transforming day index to day number.
+                }
+            }
+        }
+        return bDOM;
     }
     
-    public static String bestMonthForCommodity(String comm) { 
-        return "DUMMY"; 
+    public static String bestMonthForCommodity(String comm) {
+        int cIndex = -1;
+        for (int i = 0; i < COMMS; i++) {
+            if (commodities[i].equals(comm)) {
+                cIndex = i;
+                break;
+            }
+        }
+
+        if (cIndex == -1) {
+            return "INVALID_COMMODITY";
+        }
+
+        int bMFD = 0;
+        int maxProfit = Integer.MIN_VALUE;
+        int sum = 0;
+        for (int i = 0; i < MONTHS; i++) {
+            for (int j = 0; j < DAYS; j++) {
+                sum += profitData[i][j][cIndex];
+            }
+
+            if (sum > maxProfit) {
+                maxProfit = sum;
+                bMFD = i;
+            }
+        }
+        return months[bMFD];
     }
 
     public static int consecutiveLossDays(String comm) { 
