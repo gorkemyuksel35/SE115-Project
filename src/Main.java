@@ -12,7 +12,7 @@ public class Main {
     static String[] months = {"January","February","March","April","May","June",
                               "July","August","September","October","November","December"};
     static int[][][] profitData = new int[MONTHS][DAYS][COMMS];
-    
+
 
     // ======== REQUIRED METHOD LOAD DATA (Students fill this) ========
     public static void loadData() {
@@ -123,20 +123,19 @@ public class Main {
 
         int bDOM = 1;
         int maxProfit = Integer.MIN_VALUE;
-        int sum = 0;
         for (int i = 0; i < DAYS; i++) {
+            int sum = 0;
             for (int j = 0; j < COMMS; j++) {
                 sum += profitData[month][i][j];
-
-                if (sum > maxProfit) {
-                    maxProfit = sum;
-                    bDOM = i + 1; // This line helps us for transforming day index to day number.
-                }
+            }
+            if (sum > maxProfit) {
+                maxProfit = sum;
+                bDOM = i + 1; // This line helps us for transforming day index to day number.
             }
         }
         return bDOM;
     }
-    
+
     public static String bestMonthForCommodity(String comm) {
         int cIndex = -1;
         for (int i = 0; i < COMMS; i++) {
@@ -152,8 +151,8 @@ public class Main {
 
         int bMFD = 0;
         int maxProfit = Integer.MIN_VALUE;
-        int sum = 0;
         for (int i = 0; i < MONTHS; i++) {
+            int sum = 0;
             for (int j = 0; j < DAYS; j++) {
                 sum += profitData[i][j][cIndex];
             }
@@ -166,24 +165,146 @@ public class Main {
         return months[bMFD];
     }
 
-    public static int consecutiveLossDays(String comm) { 
-        return 1234; 
-    }
-    
-    public static int daysAboveThreshold(String comm, int threshold) { 
-        return 1234; 
+    public static int consecutiveLossDays(String comm) {
+            int cIndex = -1;
+            for (int i = 0; i < COMMS; i++) {
+                if (commodities[i].equals(comm)) {
+                    cIndex = i;
+                    break;
+                }
+            }
+
+            if (cIndex == -1) return -1;
+            int maxStreak = 0;
+            int current = 0;
+
+            for (int i = 0; i < MONTHS; i++) {
+                for (int j = 0; j < DAYS; j++) {
+                    if (profitData[i][j][cIndex] < 0) {  // This if loop checks whether if there was a loss, current streak is not interrupted.
+                        current++;
+                        if (current > maxStreak) {
+                            maxStreak = current;
+                        }
+                    }else {  // This line helps us for if there was a profit, current streak is ended.
+                        current = 0;
+                    }
+                }
+            }
+            return maxStreak;
     }
 
-    public static int biggestDailySwing(int month) { 
-        return 1234; 
+    public static int daysAboveThreshold(String comm, int threshold) {
+        int cIndex = -1;
+        for (int i = 0; i < COMMS; i++) {
+            if (commodities[i].equals(comm)) {
+                cIndex = i;
+                break;
+            }
+        }
+
+        if (cIndex == -1) {
+            return -1;
+        }
+        if (threshold < -1000000 || threshold > 1000000) {  // This line helps us for protection of unreasonable threshold values.
+            return -1;
+        }
+
+        int count = 0;
+        for (int i = 0; i < MONTHS; i++) {
+            for (int j = 0; j < DAYS; j++) {
+                if (profitData[i][j][cIndex] > threshold) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    public static int biggestDailySwing(int month) {
+        if (month < 0 || month >= MONTHS) {
+            return -99999;
+        }
+        int bDS = 0;
+
+        for (int i = 0; i < DAYS - 1; i++) {
+            int today = 0;
+            int tomorrow = 0;
+            for (int j = 0; j < COMMS; j++) {
+                today += profitData[month][i][j];
+                tomorrow += profitData[month][i + 1][j];
+            }
+
+            int swing = Math.abs(today - tomorrow);  // This Math.abs helps for absolute difference calculation.
+            if (swing > bDS) {
+                bDS = swing;
+            }
+        }
+
+        return bDS;
     }
     
-    public static String compareTwoCommodities(String c1, String c2) { 
-        return "DUMMY is better by 1234"; 
+    public static String compareTwoCommodities(String c1, String c2) {
+        int i1 = -1;
+        int i2 = -1;
+
+        for (int i = 0; i < COMMS; i++) {
+            if (commodities[i].equals(c1)) {
+                i1 = i;
+            }
+            if (commodities[i].equals(c2)) {
+                i2 = i;
+            }
+        }
+
+        if (i1 == -1 || i2 == -1) {
+            return "INVALID_COMMODITY";
+        }
+
+        int sum1 = 0;
+        int sum2 = 0;
+
+        for (int i = 0; i < MONTHS; i++) {
+            for (int j = 0; j < DAYS; j++) {
+                sum1 += profitData[i][j][i1];
+                sum2 += profitData[i][j][i2];
+            }
+        }
+
+        if (sum1 > sum2) {
+            return c1 + " is better by " + (sum1 - sum2);
+        }
+        if (sum1 < sum2) {
+            return c2 + " is better by " + (sum2 - sum1);
+        }
+        return "Equal";
     }
     
-    public static String bestWeekOfMonth(int month) { 
-        return "DUMMY"; 
+    public static String bestWeekOfMonth(int month) {
+        if (month < 0 || month >= MONTHS) {
+            return "INVALID_MONTH";
+        }
+
+        int bWOM = 1;
+        int maxProfit =  Integer.MIN_VALUE;
+
+        for (int i = 0; i < 4; i++) {
+            int sum = 0;
+            int start = i * 7;
+            int end = start + 7;
+
+            for (int j = start; j < end; j++) {
+                for (int k = 0; k < COMMS; k++) {
+                    sum += profitData[month][j][k];
+                }
+            }
+            if (sum > maxProfit) {
+                maxProfit = sum;
+                bWOM = i + 1;
+            }
+        }
+
+        return "Week" + bWOM;
     }
 
     public static void main(String[] args) {
